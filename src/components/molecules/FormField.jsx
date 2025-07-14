@@ -11,6 +11,7 @@ const FormField = ({
   type = "input", 
   className, 
   children,
+  required = false,
   ...props 
 }) => {
   const renderField = () => {
@@ -26,12 +27,13 @@ const FormField = ({
 
   return (
     <div className={cn("space-y-2", className)}>
-      {label && (
+{label && (
         <Label 
           htmlFor={id} 
           className="block text-sm font-medium text-gray-700"
         >
           {label}
+          {required && <span className="text-error ml-1">*</span>}
         </Label>
       )}
       {renderField()}
