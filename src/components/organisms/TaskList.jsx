@@ -27,7 +27,7 @@ const TaskList = ({
       animate={{ opacity: 1 }}
       transition={{ duration: 0.2 }}
     >
-      <AnimatePresence mode="popLayout">
+<AnimatePresence mode="popLayout">
         {sortedTasks.map((task) => (
 <TaskCard
             key={task.id}
@@ -36,9 +36,9 @@ const TaskList = ({
             onToggleComplete={onToggleComplete}
             onEdit={onEdit}
             onDelete={onDelete}
-            isSelected={selectedTasks.includes(task.Id)}
+            isSelected={selectedTasks.includes(task.id)}
             onSelect={onTaskSelection}
-            showSelection={selectedTasks.length > 0 || selectedTasks.includes(task.Id)}
+            showSelection={selectedTasks.length > 0 || selectedTasks.includes(task.id)}
           />
         ))}
       </AnimatePresence>
