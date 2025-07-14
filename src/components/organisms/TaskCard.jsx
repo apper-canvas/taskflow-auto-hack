@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, forwardRef } from "react";
 import { motion } from "framer-motion";
 import { cn } from "@/utils/cn";
 import TaskCheckbox from "@/components/molecules/TaskCheckbox";
@@ -9,14 +9,14 @@ import Button from "@/components/atoms/Button";
 import ApperIcon from "@/components/ApperIcon";
 import { isOverdue } from "@/utils/dateHelpers";
 
-const TaskCard = ({ 
+const TaskCard = forwardRef(({ 
   task, 
   category, 
   onToggleComplete, 
   onEdit, 
   onDelete, 
   className 
-}) => {
+}, ref) => {
   const [isCompleting, setIsCompleting] = useState(false);
 
   const handleToggleComplete = async () => {
@@ -31,7 +31,8 @@ const TaskCard = ({
   const isTaskOverdue = isOverdue(task.dueDate);
 
   return (
-    <motion.div
+<motion.div
+      ref={ref}
       layout
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
@@ -114,6 +115,8 @@ const TaskCard = ({
       </div>
     </motion.div>
   );
-};
+});
+
+TaskCard.displayName = 'TaskCard';
 
 export default TaskCard;
