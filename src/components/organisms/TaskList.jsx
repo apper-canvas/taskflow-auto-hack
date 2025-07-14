@@ -30,6 +30,7 @@ const TaskList = ({
 <AnimatePresence mode="popLayout">
 {sortedTasks.map((task, index) => (
           <TaskCard
+            key={task.id || `task-${index}-${task.title?.slice(0,10) || 'unknown'}`}
             key={task?.id || `task-${index}-${Date.now()}`}
             task={task}
             category={getTaskCategory(task.categoryId)}
