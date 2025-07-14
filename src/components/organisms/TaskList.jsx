@@ -28,9 +28,9 @@ const TaskList = ({
       transition={{ duration: 0.2 }}
     >
 <AnimatePresence mode="popLayout">
-        {sortedTasks.map((task) => (
-<TaskCard
-            key={task.id}
+{sortedTasks.map((task, index) => (
+          <TaskCard
+            key={task?.id || `task-${index}-${Date.now()}`}
             task={task}
             category={getTaskCategory(task.categoryId)}
             onToggleComplete={onToggleComplete}
