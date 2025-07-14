@@ -1,0 +1,98 @@
+[
+  {
+    "Id": 1,
+    "id": "task-1",
+    "title": "Complete quarterly report",
+    "description": "Finish the Q4 financial report and submit to management",
+    "categoryId": "work",
+    "priority": "high",
+    "dueDate": "2024-12-20T17:00:00Z",
+    "completed": false,
+    "createdAt": "2024-12-15T10:00:00Z",
+    "recurring": "none"
+  },
+  {
+    "Id": 2,
+    "id": "task-2",
+    "title": "Team meeting preparation",
+    "description": "Prepare agenda and materials for Monday's team meeting",
+    "categoryId": "work",
+    "priority": "medium",
+    "dueDate": "2024-12-19T09:00:00Z",
+    "completed": false,
+    "createdAt": "2024-12-15T11:00:00Z",
+    "recurring": "none"
+  },
+  {
+    "Id": 3,
+    "id": "task-3",
+    "title": "Update project timeline",
+    "description": "Review and update the project timeline based on recent changes",
+    "categoryId": "work",
+    "priority": "medium",
+    "dueDate": "2024-12-18T16:00:00Z",
+    "completed": false,
+    "createdAt": "2024-12-15T12:00:00Z",
+    "recurring": "none"
+  },
+  {
+    "Id": 4,
+    "id": "task-4",
+    "title": "Call mom",
+    "description": "Weekly check-in call with mom",
+    "categoryId": "personal",
+    "priority": "low",
+    "dueDate": "2024-12-17T19:00:00Z",
+    "completed": false,
+    "createdAt": "2024-12-15T13:00:00Z",
+    "recurring": "weekly"
+  },
+  {
+    "Id": 5,
+    "id": "task-5",
+    "title": "Book dentist appointment",
+    "description": "Schedule routine dental cleaning",
+    "categoryId": "health",
+    "priority": "medium",
+    "dueDate": "2024-12-21T14:00:00Z",
+    "completed": false,
+    "createdAt": "2024-12-15T14:00:00Z",
+    "recurring": "none"
+  },
+  {
+    "Id": 6,
+    "id": "task-6",
+    "title": "Buy Christmas gifts",
+    "description": "Shop for Christmas presents for family",
+    "categoryId": "shopping",
+    "priority": "high",
+    "dueDate": "2024-12-23T12:00:00Z",
+    "completed": false,
+    "createdAt": "2024-12-15T15:00:00Z",
+    "recurring": "none"
+  },
+  {
+    "Id": 7,
+    "id": "task-7",
+    "title": "Plan weekend trip",
+    "description": "Research and book accommodation for weekend getaway",
+    "categoryId": "personal",
+    "priority": "low",
+    "dueDate": null,
+    "completed": false,
+    "createdAt": "2024-12-15T16:00:00Z",
+    "recurring": "none"
+  },
+  {
+    "Id": 8,
+    "id": "task-8",
+    "title": "Email client proposal",
+    "description": "Send project proposal to new client",
+    "categoryId": "work",
+    "priority": "high",
+    "dueDate": "2024-12-16T10:00:00Z",
+    "completed": true,
+    "createdAt": "2024-12-14T14:00:00Z",
+    "recurring": "none"
+  }
+]
