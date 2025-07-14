@@ -14,6 +14,7 @@ const TaskModal = ({ isOpen, onClose, onSubmit, task = null, categories = [] }) 
     dueDate: "",
     recurring: "none",
   });
+  const [errors, setErrors] = useState({});
 
   useEffect(() => {
     if (task) {
@@ -25,7 +26,7 @@ const TaskModal = ({ isOpen, onClose, onSubmit, task = null, categories = [] }) 
         dueDate: task.dueDate ? format(new Date(task.dueDate), "yyyy-MM-dd'T'HH:mm") : "",
         recurring: task.recurring || "none",
       });
-    } else {
+} else {
       setFormData({
         title: "",
         description: "",
@@ -35,10 +36,31 @@ const TaskModal = ({ isOpen, onClose, onSubmit, task = null, categories = [] }) 
         recurring: "none",
       });
     }
+    setErrors({});
   }, [task, categories, isOpen]);
+
+const validateForm = () => {
+    const newErrors = {};
+    
+    if (!formData.title.trim()) {
+      newErrors.title = "Task title is required";
+    }
+    
+    if (!formData.categoryId) {
+      newErrors.categoryId = "Category is required";
+    }
+    
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
 
   const handleSubmit = (e) => {
     e.preventDefault();
+    
+    if (!validateForm()) {
+      return;
+    }
+    
     const submitData = {
       ...formData,
       dueDate: formData.dueDate ? new Date(formData.dueDate).toISOString() : null,
@@ -47,8 +69,11 @@ const TaskModal = ({ isOpen, onClose, onSubmit, task = null, categories = [] }) 
     onClose();
   };
 
-  const handleChange = (field, value) => {
+const handleChange = (field, value) => {
     setFormData(prev => ({ ...prev, [field]: value }));
+    if (errors[field]) {
+      setErrors(prev => ({ ...prev, [field]: undefined }));
+    }
   };
 
   if (!isOpen) return null;
@@ -85,11 +110,12 @@ const TaskModal = ({ isOpen, onClose, onSubmit, task = null, categories = [] }) 
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-4">
-            <FormField
+<FormField
               label="Title"
               id="title"
               value={formData.title}
               onChange={(e) => handleChange("title", e.target.value)}
+              error={errors.title}
               required
             />
 
@@ -102,14 +128,16 @@ const TaskModal = ({ isOpen, onClose, onSubmit, task = null, categories = [] }) 
               rows={3}
             />
 
-            <FormField
+<FormField
               label="Category"
               id="categoryId"
               type="select"
               value={formData.categoryId}
               onChange={(e) => handleChange("categoryId", e.target.value)}
+              error={errors.categoryId}
               required
             >
+              <option value="">Select category</option>
               {categories.map((category) => (
                 <option key={category.id} value={category.id}>
                   {category.name}

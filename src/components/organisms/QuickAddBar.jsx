@@ -11,10 +11,29 @@ const QuickAddBar = ({ categories, onAddTask, className }) => {
   const [title, setTitle] = useState("");
   const [categoryId, setCategoryId] = useState(categories[0]?.id || "");
   const [priority, setPriority] = useState("medium");
+  const [errors, setErrors] = useState({});
+
+  const validateForm = () => {
+    const newErrors = {};
+    
+    if (!title.trim()) {
+      newErrors.title = "Task title is required";
+    }
+    
+    if (!categoryId) {
+      newErrors.categoryId = "Category is required";
+    }
+    
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    if (!title.trim()) return;
+    
+    if (!validateForm()) {
+      return;
+    }
 
     const newTask = {
       id: generateTaskId(),
@@ -26,8 +45,9 @@ const QuickAddBar = ({ categories, onAddTask, className }) => {
       recurring: "none",
     };
 
-    onAddTask(newTask);
+onAddTask(newTask);
     setTitle("");
+    setErrors({});
     setIsExpanded(false);
   };
 
@@ -35,6 +55,7 @@ const QuickAddBar = ({ categories, onAddTask, className }) => {
     if (e.key === "Escape") {
       setIsExpanded(false);
       setTitle("");
+      setErrors({});
     }
   };
 
@@ -54,29 +75,50 @@ const QuickAddBar = ({ categories, onAddTask, className }) => {
           <span>Add a task...</span>
         </button>
       ) : (
-        <form onSubmit={handleSubmit} className="space-y-3">
-          <Input
-            type="text"
-            placeholder="Task title"
-            value={title}
-            onChange={(e) => setTitle(e.target.value)}
-            onKeyDown={handleKeyDown}
-            autoFocus
-            className="w-full"
-          />
+<form onSubmit={handleSubmit} className="space-y-3">
+          <div className="space-y-2">
+            <Input
+              type="text"
+              placeholder="Task title"
+              value={title}
+              onChange={(e) => {
+                setTitle(e.target.value);
+                if (errors.title) {
+                  setErrors(prev => ({ ...prev, title: undefined }));
+                }
+              }}
+              onKeyDown={handleKeyDown}
+              autoFocus
+              className={`w-full ${errors.title ? 'border-error' : ''}`}
+            />
+            {errors.title && (
+              <p className="text-sm text-error">{errors.title}</p>
+            )}
+          </div>
           
           <div className="flex items-center gap-3">
-            <Select
-              value={categoryId}
-              onChange={(e) => setCategoryId(e.target.value)}
-              className="flex-1"
-            >
-              {categories.map((category) => (
-                <option key={category.id} value={category.id}>
-                  {category.name}
-                </option>
-              ))}
-            </Select>
+            <div className="flex-1 space-y-2">
+              <Select
+                value={categoryId}
+                onChange={(e) => {
+                  setCategoryId(e.target.value);
+                  if (errors.categoryId) {
+                    setErrors(prev => ({ ...prev, categoryId: undefined }));
+                  }
+                }}
+                className={`w-full ${errors.categoryId ? 'border-error' : ''}`}
+              >
+                <option value="">Select category</option>
+                {categories.map((category) => (
+                  <option key={category.id} value={category.id}>
+                    {category.name}
+                  </option>
+                ))}
+              </Select>
+              {errors.categoryId && (
+                <p className="text-sm text-error">{errors.categoryId}</p>
+              )}
+            </div>
             
             <Select
               value={priority}
@@ -97,9 +139,10 @@ const QuickAddBar = ({ categories, onAddTask, className }) => {
               type="button"
               variant="ghost"
               size="sm"
-              onClick={() => {
+onClick={() => {
                 setIsExpanded(false);
                 setTitle("");
+                setErrors({});
               }}
             >
               Cancel

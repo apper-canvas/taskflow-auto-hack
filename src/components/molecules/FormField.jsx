@@ -26,9 +26,9 @@ const FormField = ({
   };
 
   return (
-    <div className={cn("space-y-2", className)}>
-{label && (
-        <Label 
+<div className={cn("space-y-2", className)}>
+      {label && (
+        <Label
           htmlFor={id} 
           className="block text-sm font-medium text-gray-700"
         >
