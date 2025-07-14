@@ -31,6 +31,22 @@ export const sortTasksByPriority = (tasks) => {
   });
 };
 
+export const sortTasksByDate = (tasks) => {
+  return tasks.sort((a, b) => {
+    // Handle cases where dueDate might be null or undefined
+    if (!a.dueDate && !b.dueDate) return 0;
+    if (!a.dueDate) return 1; // Tasks without due dates go to end
+    if (!b.dueDate) return -1;
+    
+    // Convert to Date objects for proper comparison
+    const dateA = new Date(a.dueDate);
+    const dateB = new Date(b.dueDate);
+    
+    // Sort in ascending order (earliest dates first)
+    return dateA - dateB;
+  });
+};
+
 export const filterTasksBySearch = (tasks, searchQuery) => {
   if (!searchQuery) return tasks;
   
