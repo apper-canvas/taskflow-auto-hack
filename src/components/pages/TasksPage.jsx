@@ -9,6 +9,8 @@ import QuickAddBar from "@/components/organisms/QuickAddBar";
 import TaskList from "@/components/organisms/TaskList";
 import TaskModal from "@/components/organisms/TaskModal";
 import BulkSelectionToolbar from "@/components/organisms/BulkSelectionToolbar";
+import Button from "@/components/atoms/Button";
+import ApperIcon from "@/components/ApperIcon";
 import Empty from "@/components/ui/Empty";
 import Error from "@/components/ui/Error";
 import Loading from "@/components/ui/Loading";
@@ -154,12 +156,25 @@ const handleAddTask = async (taskData) => {
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.3 }}
       >
-        <h1 className="text-2xl font-bold text-gray-900 mb-2">
-          {getPageTitle()}
-        </h1>
-        <p className="text-gray-600">
-          {filteredTasks.length} {filteredTasks.length === 1 ? "task" : "tasks"}
-        </p>
+<div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+          <div>
+            <h1 className="text-2xl font-bold text-gray-900 mb-2">
+              {getPageTitle()}
+            </h1>
+            <p className="text-gray-600">
+              {filteredTasks.length} {filteredTasks.length === 1 ? "task" : "tasks"}
+            </p>
+          </div>
+          {categoryId !== "completed" && (
+            <Button
+              onClick={() => setShowTaskModal(true)}
+              className="bg-primary hover:bg-primary/90 text-white px-4 py-2 rounded-lg flex items-center gap-2 transition-colors w-full sm:w-auto"
+            >
+              <ApperIcon name="Plus" size={16} />
+              Add Task
+            </Button>
+          )}
+        </div>
       </motion.div>
 
       {categoryId !== "completed" && (
