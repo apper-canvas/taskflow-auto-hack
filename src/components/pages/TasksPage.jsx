@@ -1,19 +1,17 @@
-import { useState, useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { motion } from "framer-motion";
-import QuickAddBar from "@/components/organisms/QuickAddBar";
-import FilterBar from "@/components/organisms/FilterBar";
-import TaskList from "@/components/organisms/TaskList";
-import TaskModal from "@/components/organisms/TaskModal";
-import Loading from "@/components/ui/Loading";
-import Error from "@/components/ui/Error";
-import Empty from "@/components/ui/Empty";
 import { useTasks } from "@/hooks/useTasks";
 import { useCategories } from "@/hooks/useCategories";
-import { 
-  filterTasksBySearch, 
-  filterTasksByPriority 
-} from "@/utils/taskHelpers";
+import { filterTasksByPriority, filterTasksBySearch } from "@/utils/taskHelpers";
+import FilterBar from "@/components/organisms/FilterBar";
+import QuickAddBar from "@/components/organisms/QuickAddBar";
+import TaskList from "@/components/organisms/TaskList";
+import TaskModal from "@/components/organisms/TaskModal";
+import BulkSelectionToolbar from "@/components/organisms/BulkSelectionToolbar";
+import Empty from "@/components/ui/Empty";
+import Error from "@/components/ui/Error";
+import Loading from "@/components/ui/Loading";
 
 const TasksPage = () => {
   const { categoryId } = useParams();
@@ -27,28 +25,27 @@ const TasksPage = () => {
     deleteTask, 
     toggleTaskComplete, 
     loadTasks 
-  } = useTasks(categoryId);
+} = useTasks(categoryId);
 
   const [searchQuery, setSearchQuery] = useState("");
   const [priorityFilter, setPriorityFilter] = useState("all");
   const [sortBy, setSortBy] = useState("date");
   const [showTaskModal, setShowTaskModal] = useState(false);
   const [editingTask, setEditingTask] = useState(null);
+  const [selectedTasks, setSelectedTasks] = useState([]);
 
   // Filter tasks based on search and priority
   const filteredTasks = filterTasksByPriority(
     filterTasksBySearch(tasks, searchQuery),
     priorityFilter
   );
-
-  const handleAddTask = async (taskData) => {
+const handleAddTask = async (taskData) => {
     try {
       await createTask(taskData);
     } catch (error) {
       console.error("Failed to add task:", error);
     }
   };
-
   const handleEditTask = (task) => {
     setEditingTask(task);
     setShowTaskModal(true);
@@ -79,6 +76,62 @@ const TasksPage = () => {
     } catch (error) {
       console.error("Failed to toggle task completion:", error);
     }
+  };
+
+  const handleTaskSelection = (taskId, isSelected) => {
+    setSelectedTasks(prev => {
+      if (isSelected) {
+        return [...prev, taskId];
+      } else {
+        return prev.filter(id => id !== taskId);
+      }
+    });
+  };
+
+  const handleBulkDelete = async () => {
+    if (selectedTasks.length === 0) return;
+    
+    const confirmMessage = `Are you sure you want to delete ${selectedTasks.length} selected ${selectedTasks.length === 1 ? 'task' : 'tasks'}?`;
+    if (window.confirm(confirmMessage)) {
+      try {
+        const { bulkDelete } = await import("@/services/api/taskService");
+        await bulkDelete(selectedTasks);
+        setSelectedTasks([]);
+        loadTasks();
+      } catch (error) {
+        console.error("Failed to delete selected tasks:", error);
+      }
+    }
+  };
+
+  const handleBulkComplete = async () => {
+    if (selectedTasks.length === 0) return;
+    
+    try {
+      const { bulkComplete } = await import("@/services/api/taskService");
+      await bulkComplete(selectedTasks);
+      setSelectedTasks([]);
+      loadTasks();
+    } catch (error) {
+      console.error("Failed to complete selected tasks:", error);
+    }
+  };
+
+  const handleBulkMoveToCategory = async (categoryId) => {
+    if (selectedTasks.length === 0) return;
+    
+    try {
+      const { bulkMoveToCategory } = await import("@/services/api/taskService");
+      await bulkMoveToCategory(selectedTasks, categoryId);
+      setSelectedTasks([]);
+      loadTasks();
+    } catch (error) {
+      console.error("Failed to move selected tasks:", error);
+    }
+  };
+
+  const clearSelection = () => {
+    setSelectedTasks([]);
   };
 
   const getPageTitle = () => {
@@ -123,7 +176,7 @@ const TasksPage = () => {
         onPriorityFilterChange={setPriorityFilter}
         sortBy={sortBy}
         onSortChange={setSortBy}
-      />
+/>
 
       {filteredTasks.length === 0 ? (
         <Empty
@@ -148,14 +201,28 @@ const TasksPage = () => {
           }}
         />
       ) : (
-        <TaskList
-          tasks={filteredTasks}
-          categories={categories}
-          onToggleComplete={handleToggleComplete}
-          onEdit={handleEditTask}
-          onDelete={handleDeleteTask}
-          sortBy={sortBy}
-        />
+        <>
+          {selectedTasks.length > 0 && (
+            <BulkSelectionToolbar
+              selectedCount={selectedTasks.length}
+              categories={categories}
+              onBulkDelete={handleBulkDelete}
+              onBulkComplete={handleBulkComplete}
+              onBulkMoveToCategory={handleBulkMoveToCategory}
+              onClearSelection={clearSelection}
+            />
+          )}
+          <TaskList
+            tasks={filteredTasks}
+            categories={categories}
+            onToggleComplete={handleToggleComplete}
+            onEdit={handleEditTask}
+            onDelete={handleDeleteTask}
+            sortBy={sortBy}
+            selectedTasks={selectedTasks}
+            onTaskSelection={handleTaskSelection}
+          />
+        </>
       )}
 
       <TaskModal

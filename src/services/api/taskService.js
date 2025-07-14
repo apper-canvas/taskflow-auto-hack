@@ -131,6 +131,68 @@ export const taskService = {
       await categoryService.updateTaskCount(categoryId, -count);
     }
     
-    return { success: true, deletedCount: deletedTasks.length };
+return { success: true, deletedCount: deletedTasks.length };
+  },
+
+  async bulkComplete(ids) {
+    await delay(400);
+    const updatedTasks = [];
+    
+    ids.forEach(id => {
+      const index = tasks.findIndex(t => t.Id === parseInt(id));
+      if (index !== -1) {
+        const task = tasks[index];
+        tasks[index] = { ...task, completed: !task.completed };
+        updatedTasks.push(tasks[index]);
+        
+        // Handle recurring tasks for newly completed ones
+        if (!task.completed && task.recurring && task.recurring !== "none") {
+          const nextDate = getNextRecurringDate(task.dueDate, task.recurring);
+          if (nextDate) {
+            const newRecurringTask = {
+              ...task,
+              Id: Math.max(...tasks.map(t => t.Id)) + 1,
+              id: `${task.id}-${Date.now()}`,
+              dueDate: nextDate.toISOString(),
+              completed: false,
+              createdAt: new Date().toISOString(),
+            };
+            tasks.push(newRecurringTask);
+          }
+        }
+      }
+    });
+    
+    return { success: true, updatedCount: updatedTasks.length };
+  },
+
+  async bulkMoveToCategory(ids, newCategoryId) {
+    await delay(400);
+    const updatedTasks = [];
+    const categoryUpdates = {};
+    
+    ids.forEach(id => {
+      const index = tasks.findIndex(t => t.Id === parseInt(id));
+      if (index !== -1) {
+        const task = tasks[index];
+        const oldCategoryId = task.categoryId;
+        
+        // Track category changes
+        categoryUpdates[oldCategoryId] = (categoryUpdates[oldCategoryId] || 0) - 1;
+        categoryUpdates[newCategoryId] = (categoryUpdates[newCategoryId] || 0) + 1;
+        
+        tasks[index] = { ...task, categoryId: newCategoryId };
+        updatedTasks.push(tasks[index]);
+      }
+    });
+    
+    // Update category task counts
+    for (const [categoryId, count] of Object.entries(categoryUpdates)) {
+      if (count !== 0) {
+        await categoryService.updateTaskCount(categoryId, count);
+      }
+    }
+    
+    return { success: true, updatedCount: updatedTasks.length };
   }
 };
